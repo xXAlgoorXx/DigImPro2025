@@ -1,0 +1,112 @@
+\section{Morphology}
+Mostly used on binary images (can be used on gray level images as well)
+\subsection{Binary Morphology}
+First threshold image to binary image.
+\textbf{Set Operations}:
+\[
+\begin{array}{rl}
+\emptyset & \text{empty set} \\
+A \subseteq B & A \text{ is part of } B \\
+A \cap B & \text{intersection of } A \text{ and } B \text{: and} \\
+A \cup B & \text{union of } A \text{ and } B \text{: or} \\
+A^c & \text{complement } A \text{: not} \\
+A - B & A \cap B^c : a \in A, a \notin B \\
+A_z & A \text{ displaced by } z \text{ pixels: } a \in A : a_x + z_x, a_y + z_y \\
+\hat{B} & B \text{ mirrored (point symmetry)}
+\end{array}
+\]
+\subsection{Binary Morphology Operations}
+2 basic operations:
+\begin{itemize}
+    \item Erosion: Eliminates small foreground structures, Shrinks foreground objects
+    \[
+    f_{erosion}(I) = I \ominus B = \{z \in \mathbb{Z}^2 | B_z \subseteq I\}
+    \]
+    \item Dilation: Small gaps in foreground structure are filled, Shrinks background objects
+    \[
+f_{dilation}(I) = I \oplus B = \{z \in \mathbb{Z}^2 | B_z \cap I \neq \emptyset\}
+\]
+\end{itemize}
+
+Dilation and erosion are dual, i.e. one can be expressed in
+terms of the other operation.
+\subsection{Compound Operations}
+\textbf{Opening}:
+\[
+f_{open}(I) = (I \ominus B) \oplus B
+\]
+\begin{itemize}
+    \item Erosion followed by a dilation with the same structuring element
+    \item Foreground structures smaller than H will be removed (Erosion)
+    \item Dilation smooths the remaining structures and let them grow to their original size
+\end{itemize}
+
+\textbf{Closing}:
+\[
+f_{close}(I) = (I \oplus B) \ominus B
+\]
+\begin{itemize}
+    \item Dilation followed by an erosion with the same structuring element
+    \item Holes in foreground structures and small gaps smaller than the structuring element are filled
+    \item Erosion let the remaining structure grow to its original size
+\end{itemize}
+
+\textbf{Boundary Extraction}:
+\[
+f_{boundary}(I) = I  - (I \ominus B)
+\]
+Size of B defines the thickness of the border.
+
+\textbf{Hit-or-Miss Transform}:
+\[
+f_{hit-or-miss}(I)= I \ostar B_{1,2} = (I \ominus B_1) \cap (I^c \ominus B_2)
+\]
+\begin{itemize}
+    \item Basic tool for shape detection and shape extraction
+    \item \(B_1\) must be contained in foreground (hit in foreground)
+    \item \(B_2\) must be contained in background (hit in background, miss in foreground)
+\end{itemize}
+
+\subsection{Applications}
+\begin{itemize}
+    \item Convex Hull
+    \item Thinning
+    \item Skeletons
+    \item Pruning
+\end{itemize}
+
+\subsection{Grayscale Morphology}
+2 kind of structuring elements:
+\begin{itemize}
+    \item Flat: All pixels have the same weight
+    \item Non-flat: Pixels have different weights
+\end{itemize}
+\textbf{Grayscale Erosion}:
+\[
+[I \ominus b](x, y) = \min_{(s, t) \in b} \left\{ I(x + s, y + t) - b(s, t) \right\}
+\]
+
+\textbf{Grayscale Dilation}:
+\[
+[I \oplus b](x, y) = \max_{(s, t) \in \hat{b}} \left\{ I(x - s, y - t) + \hat{b}(s, t) \right\}
+\]
+
+\textbf{Opening / Closing (with flat structuring element)}
+
+Opening: supresses bright details
+
+Closing: supresses dark details
+
+\subsection{Top Hat/Bottom Hat - Transformation}
+\textbf{Top Hat}:
+\[
+f_{top-hat}(I) = I - (I \ominus B)
+\]
+Removes light objects on a dark background.
+
+\textbf{Bottom Hat}:
+\[
+f_{bottom-hat}(I) = (I \oplus B) - I
+\]
+Removes dark objects on a bright
+background

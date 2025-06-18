@@ -1,0 +1,92 @@
+\section{Point Operations}
+Homogeneous Point Operations(HPO)[Position independent]:
+\[
+I'(x,y) = f(I(x,y))
+\]
+Inhomogeneous Point Operations(IHPO)[Position dependent]:
+\[
+I'(x,y) = f(I(x,y),x,y)
+\]
+\subsection{Homogeneous Point Operations(HPO)}
+\textbf{Properties:}
+\begin{itemize}
+    \item Global Operations
+    \item fast, able to perform in real-time
+    \item basically look up tables, constant performance time
+\end{itemize}
+\textbf{Thresholding:}
+\[
+f_{thresh}(a) =
+\begin{cases}
+    a_0 & \text{for } a < a_{th} \\
+    a_1 & \text{for } a \geq a_{th}
+\end{cases}
+\]
+\textbf{Invert:}
+\[
+f_{inv}(a) = a_{max} - a
+\]
+\textbf{Increase Brightness:}
+\[
+f_{bright}(a) = a + b
+\]
+\textbf{Increase Contrast:}
+\[
+f_{contrast}(a) = a \cdot c
+\]
+Limit Results by clamping: \( a' = \max(0,\min(a,255))\)
+
+\textbf{Automatic Contrast Adjustment:}
+\[
+f_{ac} = a_{min} + (a - a_{low})    \cdot 
+    \frac{a_{max} - a_{min}}{a_{high} - a_{low}} 
+\]
+
+\textbf{Modified Auto-Contrast:}
+saturate \(\text{s}_\text{low}\) [\%] and \(\text{s}_\text{high}\)  [\%] pixel values.
+\[
+\hat{a}_{\text{low}} = \min \left\{ i \mid \mathrm{H}(i) \geq M \cdot N \cdot s_{\text{low}} \right\}
+\]
+\[
+\hat{a}_{\text{high}} = \max \left\{ i \mid \mathrm{H}(i) \leq M \cdot N \cdot (1 - s_{\text{high}}) \right\}
+\]
+\[
+f_{\text{mac}}(a) = 
+\begin{cases}
+a_{\min} & \text{for } a \leq \hat{a}_{\text{low}} \\
+a_{\min} + (a - \hat{a}_{\text{low}}) \cdot \dfrac{a_{\max} - a_{\min}}{\hat{a}_{\text{high}} - \hat{a}_{\text{low}}} & \text{for } \hat{a}_{\text{low}} < a < \hat{a}_{\text{high}} \\
+a_{\max} & \text{for } a \geq \hat{a}_{\text{high}}
+\end{cases}
+\]
+
+\textbf{Gamma Correction:}
+Compensate for the transfer characteristic of cameras, monitors, printers.
+\[
+f_{\gamma}(a) = a^{\bar{\gamma}} \quad \text{with } \bar{\gamma} = \frac{1}{\gamma} > 0
+\]
+
+\textbf{Histogram Equalization:} Adjusts image intensities so that the output histogram is approximately uniform, enhancing contrast by redistributing pixel values based on the cumulative histogram.
+\textbf{Histogram Specification / Matching:} Generalization of Histogram Equalization. Match histogram to an arbitrary intensity distribution (e.g., of a reference image)
+
+\subsection{Inhomogeneous Point Operations(IPO)}
+\textbf{Shading Correctiom:}
+\[
+f_{\text{shading}}(a,x,y) = \frac{a}{s(x,y)} \quad s(x,y) = \text{shading function}
+\]
+\subsection{Others}
+\begin{itemize}
+    \item Bollean Operations(Masks)
+    \item Arithmetic Operations
+\end{itemize}
+\subsection{Colour Spaces}
+\textbf{RGB:}
+\begin{itemize}
+    \item Each Color component is on one axis
+    \item Coordinate axes are perpendicular
+    \item Pixels along the cube diagonal are grey values
+\end{itemize}
+\textbf{CMYK} (Cyan, Magenta, Yellow, and Key (Black))
+
+\textbf{HSI} (Hue, Saturation, Intensity)
+
+\textbf{HSL} (Hue, Saturation, Lightness)

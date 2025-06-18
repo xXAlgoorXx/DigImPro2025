@@ -16,7 +16,15 @@
 \usepackage{cleveref}
 
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
-
+\makeatletter
+\newcommand{\ostar}{\mathbin{\mathpalette\make@circled\star}}
+\newcommand{\make@circled}[2]{%
+  \ooalign{$\m@th#1\smallbigcirc{#1}$\cr\hidewidth$\m@th#1#2$\hidewidth\cr}%
+}
+\newcommand{\smallbigcirc}[1]{%
+  \vcenter{\hbox{\scalebox{0.77778}{$\m@th#1\bigcirc$}}}%
+}
+\makeatother
 \begin{document}
     \input{Sections/Header}
 	\maketitle
@@ -24,8 +32,11 @@
 
 	% Uncomment these lines if you want to include the respective sections
 	\input{Sections/01_Introduction.tex}
-	% \input{Sections/LeCoultre.tex}
-
-	% \input{Sections/14-GenerativeAI.tex}
+	\input{Sections/02_Images.tex}
+	\input{Sections/03_PointOperations.tex}
+	\input{Sections/04_SpatialFiltering.tex}
+	\input{Sections/05_FilteringFrequencyDomain.tex}
+	\input{Sections/06_Morphology.tex}
+	\input{Sections/08_ImageCoordinates.tex}
 
 \end{document}

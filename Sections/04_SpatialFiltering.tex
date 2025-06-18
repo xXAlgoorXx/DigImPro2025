@@ -1,0 +1,55 @@
+\section{Spatial Filtering}
+Convolution and Correlation.
+\subsection{Linear Filters}
+\textbf{Mean Filter}:
+\[
+f_{mean}(I(u, v)) = \frac{1}{(2r+1)^2} \sum_{i=-r}^{r} \sum_{j=-r}^{r} I(u+i, v+j)
+\]
+where \(r\) is the radius of the filter kernel.
+\subsubsection{Filter for Image Smoothing}
+\textbf{Box Filter}:
+\[
+f_{box}(I(u, v)) = \frac{1}{(2r+1)^2} \sum_{i=-r}^{r} \sum_{j=-r}^{r} I(u+i, v+j)
+\]
+\textbf{Gaussian Filter}:
+\[
+f_{gauss}(I(u, v)) = \frac{1}{2\pi\sigma^2} \sum_{i=-r}^{r} \sum_{j=-r}^{r} I(u+i, v+j) \cdot e^{-\frac{i^2 + j^2}{2\sigma^2}}
+\]
+where \(\sigma\) is the standard deviation of the Gaussian distribution.
+
+\subsection{Border Problems (Padding)}
+Extend pixel values at the border (padding):
+\begin{itemize}
+    \item constant value, default is black (0)
+    \item replicate pixels
+    \item replicate cyclic 
+\end{itemize}
+\subsection{Non-Linear Filters}
+All filters which use more than additions and multiplications.
+\subsubsection{Rank Filters}
+\textbf{Median Filter}:
+\[
+f_{median}(I(u, v)) = \text{median} \left( I(u+i, v+j) \right) \quad \text{for } i,j \in [-r,r]
+\]
+
+\textbf{Minimum Filter}:
+\[
+f_{min}(I(u, v)) = \min \left( I(u+i, v+j) \right) \quad \text{for } i,j \in [-r,r]
+\]
+
+\textbf{Maximum Filter}:
+\[
+f_{max}(I(u, v)) = \max \left( I(u+i, v+j) \right) \quad \text{for } i,j \in [-r,r] 
+\]
+\subsection{Difference Filters / Gradient Filters}
+Linear filters with negative coefficients allow to pronounce edges and contours.
+
+\textbf{Gradient Computation}: \(\frac{\partial f}{\partial u}(u) = \frac{f(u+1) - f(u-1)}{2}\)
+ results in Kernel \(K = \left[-0.5\quad 0\quad 0.5\right]\)
+
+\textbf{Filter for Edge Detection}:
+\begin{itemize}
+    \item Prewitt-Operator
+    \item Sobel-Operator
+    \item Compass Edge Filter
+\end{itemize}
