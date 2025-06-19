@@ -14,7 +14,8 @@
 \usepackage{enumitem}
 \usepackage{transparent}
 \usepackage{cleveref}
-
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \makeatletter
 \newcommand{\ostar}{\mathbin{\mathpalette\make@circled\star}}
@@ -26,6 +27,8 @@
 }
 \makeatother
 \begin{document}
+	\lhead{\textbf{PhyNMS} \\ \textit{Lukas Schöpf}}
+	\rhead{\date{\today}}
     \input{Sections/Header}
 	\maketitle
 	\setlength\parindent{0pt}
