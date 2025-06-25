@@ -1,0 +1,81 @@
+\section{3D Dense Clouds}
+\begin{itemize}
+    \item Two images are acquired from different locations. %Preferably:
+        % \subitem Cameras have aligned the x-axis
+        % \subitem Image planes are coplanar
+        % \subitem Camera constants are equal or very similar
+        % \subitem Light conditions are almost identical
+        % \subitem both images are acquired simultaneously or nearly simultaneously
+        % \subitem Camera intrinsics are known and constant
+    \item From intrinsic and extrinsic camera parameters, a projection matrix \(\mathbf{Q}\) is created
+    \item \(\mathbf{Q}\) matrix is used for 3D point cloud computation
+\end{itemize}
+
+\[
+\mathbf{P1} = 
+\begin{bmatrix}
+f & 0 & cx_1 & 0 \\
+0 & f & cy & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\quad
+\mathbf{P2} = 
+\begin{bmatrix}
+f & 0 & cx_2 & T_x \cdot f \\
+0 & f & cy & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\]
+\[
+\mathbf{Q} = 
+\begin{bmatrix}
+1 & 0 & 0 & -cx_1 \\
+0 & 1 & 0 & -cy \\
+0 & 0 & 0 & f \\
+0 & 0 & -\frac{1}{T_x} & \frac{cx_1 - cx_2}{T_x}
+\end{bmatrix}
+\]
+
+\subsubsection{Disparity Map}
+After the pixel elements matching between left and right-hand images, disparities are computed:
+\begin{itemize}
+    \item Each pixel from \(\mathbf{P1}\) that has a corresponding patch in \(\mathbf{P2}\) has a dispatity.
+    \item Not all pixels have disparity values.
+    \item Disparity values are generally in a specific range.
+\end{itemize}
+\subsubsection{3D Point Cloud}
+\[
+\begin{bmatrix}
+    X\\
+    Y\\
+    Z\\
+    1
+\end{bmatrix}
+= \mathbf{Q} \cdot
+\begin{bmatrix}
+    x\\
+    y\\
+    d\\
+    1
+\end{bmatrix}
+\]
+\(X,Y,Z,x,y\) are image coordinates, \(d\) is the disparity value for the pixel.
+Disparity map is ordered , like any grid. 3D point cloud is unordered, like any random point set.
+
+With a depth map and 3D point cloud, most of the perception tasks for a machine are solvable
+\subsection{Matching Pixels}
+Block Matching (BM) is a local stereo method that compares small patches across rectified image pairs to estimate disparity:
+\[
+d(x,y) = x_L - x_R
+\]
+Matching cost is computed using metrics like:
+\begin{itemize}
+    \item SAD(Sum of Absolute Differences)
+    \item SSD(Squared ...), NCC(Normalised Cross Corelation)
+\end{itemize}
+Semi-Global Matching (SGBM) improves accuracy by adding smoothness constraints and aggregating cost across directions.
+Disparity is converted to depth using known camera parameters:
+\[
+Z = \frac{f\cdot b}{d}
+\]
+With the Q matrix, disparity maps are reprojected into 3D.

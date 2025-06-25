@@ -1,0 +1,154 @@
+\section{Feature, Feature Extraction and Compersion}
+We destinguish:
+\begin{itemize}
+    \item \textbf{Key points:} Image coordinates of a destinctive region of an image
+    \item \textbf{Feature Descriptor:} A numeric vector that describes the image region around the key point
+\end{itemize}
+\textbf{Feature Detection:} Finding features (e.g. corners) in the image
+
+\textbf{Description:} Assigning quantitative/qualitative attributes to the features(e.g. corner orientation, relative position)
+
+
+Desirable Feature Characteristics:
+\begin{itemize}
+    \item \textbf{Independence} from location, rotaion and scale
+    \item \textbf{Robustness} to changes in illumination and viewpoint
+    \item \textbf{Preprocessing} can help normalise images(e.g. via histogram equalization) to improve feature detection and description
+\end{itemize}
+
+% \subsection{Object detection \& Recognition}
+% \begin{enumerate}
+%     \item Edges
+%     \item corners
+%     \item Local Description
+%     \item Shape Features
+% \end{enumerate}
+\subsection{Features and location}
+Types of image features:
+\begin{itemize}
+    \item \textbf{Corners:} High curvature in multiple directions
+    \item \textbf{Edges:} High gradient in one direction
+    \item \textbf{Blobs/Regions:} Areas differ in intensitiy/colour from sourroundings
+    \item \textbf{Descriptors:} Numerical vectors that encode local appearance
+\end{itemize}
+
+\subsubsection{Harris Corner Detection}
+\[
+I_x = I * \begin{bmatrix}
+-1 & 0 & 1 \\
+-2 & 0 & 2 \\
+-1 & 0 & 1
+\end{bmatrix}, \quad
+I_y = I * \begin{bmatrix}
+-1 & -2 & -1 \\
+0 & 0 & 0 \\
+1 & 2 & 1
+\end{bmatrix}
+\]
+\[
+M = \begin{bmatrix}
+\sum w \cdot I_x^2 & \sum w \cdot I_x I_y \\
+\sum w \cdot I_x I_y & \sum w \cdot I_y^2
+\end{bmatrix}, \quad
+M = \begin{bmatrix}
+A & C \\
+C & B
+\end{bmatrix}
+\]
+\[
+R = \det(M) - k \cdot (\operatorname{trace}(M))^2 = (AB - C^2) - k(A + B)^2
+\]
+\begin{itemize}
+    \item \(R > 0:\) Corner region
+    \item \(R < 0:\) Edge region
+    \item \(|R|\) small: Flat region
+\end{itemize}
+
+\subsubsection{SIFT (Scale-Invariant Feature Transform)}
+Finds key points invariant to scale, rotation and limited viewpoint changes.
+
+Algorithm:
+\begin{enumerate}
+    \item Build Gaussian scale space pyramid
+    \item Compute the difference of Gaussian (DoG) pyramid
+    \item Detect local extrema in DoG scale space
+    \item Perform key point localisation and filterning 
+    \item Assign orientation to key points
+    \item Generate 128-dim SIFT descriptor
+\end{enumerate}
+
+\subsection{SURF (Speeded-Up Robust Features)}
+Scale invariant, Rotation invariant and parial illumination invariant feature detector and descriptor.
+\textbf{Integral Image:} Each pixel(\(x,y\)) contains the sum of all pixels above and to the left and above, allowing fast rectangular region sums.
+
+Algorithm:
+\begin{enumerate}
+    \item Compute integral image
+    \item Detect interest points using Hessian matrix
+    \item Assign orientation using Haar wavelet responses
+    \item Construct SURF descriptor vectors
+\end{enumerate}
+
+\subsubsection{BRIEF (Binary Robust Invariant Elementary Features)}
+Generates binary strings. Extermely fast, Compact (binary String) and effiecient for matching via Hamming distance.
+\begin{enumerate}
+    \item \textbf{Keypoitn Detector:} BRIEF assumes you already have a set of key points (e.g. from FAST,ORB or any corner detector)
+    \item \textbf{Local Path:} Around each key point define a small patch (e.g. 31x31 pixels)
+    \item \textbf{Pairwise Intensity Test:} Within this patch, BRIEF randomly samples pairs of points (\(p_i,q_i\)) and compares their intensities
+    \item \textbf{Binary Bit String:} For each pair, \(I(p_i)<I(q_i)\) then output '1', else '0'. Concatenate all comparisons to form the final binary descriptor.
+    \[
+    bit_i = 
+    \begin{cases}
+    1 & \text{if } I(p_i) < I(q_i) \\
+    0 & \text{otherwise}
+    \end{cases}
+    \]
+    \item \textbf{Lenght of Descriptor:} The number of (\(p,q\)) comperisons. For example BRIEF-128 uses 128 comperisons per patch, resulting in a 128-bit descriptor
+\end{enumerate}
+\textbf{Limitations:}
+\begin{itemize}
+    \item No Built-in Rotation or Scale Invariance
+    \item Sensitivity to Noise \& Blur
+    \item Image Boundary Issues
+\end{itemize}
+
+\subsubsection{FAST(Feature from Accelerated Segment Test)}
+Fast is not a full feature descriptor, its \textbf{primarily keypoint} detector(i.e. where corners exist in image). Often combined with a seperate descriptor.
+\textbf{High Speed}(near realtime),\textbf{High repeatability}.
+
+\subsubsection{ORB (Oriented FAST and Rotated BRIEF)}
+\begin{itemize}
+    \item \textbf{Speed:} order of magnitude faster than SIFT
+    \item \textbf{Rotation Invariance:} Through orientation assignment and rotating BRIEF, ORB is robust to inplane rotations
+    \item \textbf{Partial Scale Handeling:} By detection FAST corners in a pyramid, ORB can capture features at multiple scales. However, its not as explicity scale-invariant as SIFT's Gaussian scale space
+\end{itemize}
+Practical Application:
+\begin{itemize}
+    \item SLAM in robotics
+    \item Mobile AR
+    \item Real-time Tracking
+\end{itemize}
+NMS(Non-Maximum Suppresion) as post-processing. Goal:
+\begin{itemize}
+    \item retain only the most significant 'response'
+    \item eliminate weaker, nearby responses
+\end{itemize}
+\subsection{Matching Features}
+\subsubsection{Angle comparison}
+Angle comparison for float feature vectors. Let \(d_1^n,d_2^n\) be a n-dimensional real-number feature vectors:
+\[
+\cos(\alpha) = \frac{a\cdot b}{|a|\cdot|b|}
+\]
+Similar features will have small angle,\(\cos(\alpha) \approx 1\).
+\subsubsection{Hamming Distance}
+Hamming distance \(D_H(\mathbf{a},\mathbf{b}) \ge 0\) Measures dissimilarity between two binary vectors. Non negative, symmetric.
+
+Image A Hash : 1011 0011
+
+Image B Hash : 1001 1011
+
+Differences : Pos.2 \quad $0 \neq 0$ ,Pos.6 \quad $0 \neq 1$
+
+\(D_H(A,B) = 2\)
+
+
